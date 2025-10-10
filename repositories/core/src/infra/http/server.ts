@@ -56,6 +56,12 @@ export function buildServer() {
   // readiness (expand later to check DB/cache/etc)
   app.get("/ready", (_req, res) => res.json({ ready: true }));
 
+  // MCP SSE endpoint
+  app.get("/mcp", async (req, res) => {
+    const { handleMCPSSE } = await import("@mcp/server");
+    await handleMCPSSE(req, res);
+  });
+
   // 404
   app.use((_req, res) => res.status(404).json({ error: "Not Found" }));
 

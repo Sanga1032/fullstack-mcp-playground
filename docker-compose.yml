@@ -154,6 +154,8 @@ services:
 
     environment:
       - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://${BACKEND_DOMAIN}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 
     networks:
       - leonobitech-net
@@ -184,3 +186,66 @@ services:
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
       # Optionally attach middlewares defined under traefik/dynamic
       # - "traefik.http.routers.frontend.middlewares=secure-strict@file"
+
+  # ════════════════════════════════════════════════════════════
+  # MCP SERVERS (Model Context Protocol)
+  # ════════════════════════════════════════════════════════════
+
+  mcp-database:
+    build:
+      context: ./repositories/mcp-database
+      dockerfile: Dockerfile
+    image: mcp-database:v1.0.0
+    container_name: mcp-database
+    restart: unless-stopped
+
+    environment:
+      - NODE_ENV=production
+      - PORT=8001
+      - SERVICE_NAME=mcp-database
+      - LOG_LEVEL=info
+      - CORS_ORIGIN=https://${FRONTEND_DOMAIN}
+      - DATABASE_URL=${DATABASE_URL}
+
+    networks:
+      - leonobitech-net
+
+    depends_on:
+      traefik:
+        condition: service_started
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-database.rule=Host(`${BACKEND_DOMAIN}`) && PathPrefix(`/mcp-db`)"
+      - "traefik.http.routers.mcp-database.entrypoints=websecure"
+      - "traefik.http.routers.mcp-database.tls=true"
+      - "traefik.http.services.mcp-database.loadbalancer.server.port=8001"
+
+  mcp-files:
+    build:
+      context: ./repositories/mcp-files
+      dockerfile: Dockerfile
+    image: mcp-files:v1.0.0
+    container_name: mcp-files
+    restart: unless-stopped
+
+    environment:
+      - NODE_ENV=production
+      - PORT=8002
+      - SERVICE_NAME=mcp-files
+      - LOG_LEVEL=info
+      - CORS_ORIGIN=https://${FRONTEND_DOMAIN}
+
+    networks:
+      - leonobitech-net
+
+    depends_on:
+      traefik:
+        condition: service_started
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-files.rule=Host(`${BACKEND_DOMAIN}`) && PathPrefix(`/mcp-files`)"
+      - "traefik.http.routers.mcp-files.entrypoints=websecure"
+      - "traefik.http.routers.mcp-files.tls=true"
+      - "traefik.http.services.mcp-files.loadbalancer.server.port=8002"

@@ -9,7 +9,7 @@ const Env = z.object({
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
     .default("debug"),
-  SERVICE_NAME: z.string().default("core"),
+  SERVICE_NAME: z.string().default("mcp-core"),
   TRAEFIK_DOMAIN: z.string(),
   FRONTEND_DOMAIN: z.string(),
   BACKEND_DOMAIN: z.string(),

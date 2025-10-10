@@ -1,0 +1,34 @@
+{
+  "servers": [
+    {
+      "id": "mcp-core",
+      "name": "Core Server",
+      "description": "System health, metrics, and configuration tools",
+      "endpoint": "https://api.localhost/mcp",
+      "enabled": true,
+      "category": "core",
+      "port": 8000,
+      "tools": ["get_health", "get_metrics", "get_config"]
+    },
+    {
+      "id": "mcp-database",
+      "name": "Database Server",
+      "description": "Database operations: query, insert, schema",
+      "endpoint": "https://api.localhost:8001/mcp",
+      "enabled": true,
+      "category": "database",
+      "port": 8001,
+      "tools": ["query_database", "insert_record", "get_database_schema"]
+    },
+    {
+      "id": "mcp-files",
+      "name": "File System Server",
+      "description": "File operations: read, write, list, search",
+      "endpoint": "https://api.localhost:8002/mcp",
+      "enabled": false,
+      "category": "files",
+      "port": 8002,
+      "tools": ["example_tool"]
+    }
+  ]
+}

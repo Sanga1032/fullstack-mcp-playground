@@ -1,10 +1,12 @@
-# fullstack-frontend-core
+# 🤖 Fullstack MCP Playground
 
-<p align="center"> <img src="./assets/banner-002.png" alt="Fullstack Frontend Core — Leonobitech" width="100%" /> </p>
+<p align="center">
+  <img src="./assets/banner-003.png" alt="Fullstack MCP Playground — Leonobitech" width="100%" />
+</p>
 
-Frontend foundation built with **Next.js 15 + TypeScript (ESM)** — containerized and ready to connect with the existing **Traefik infrastructure**.
+**Build end-to-end fullstack AI applications with the Model Context Protocol (MCP) and Claude as the LLM engine.**
 
-A minimal “Hello World” app designed to run locally **as if it were in production**.
+A production-ready template featuring **microservices architecture for MCP Servers**, where each server exposes specialized tools that AI agents can use. The frontend acts as the **MCP Host**, orchestrating multiple servers and providing a chat interface powered by Claude.
 
 **FROM LOCALHOST TO PRODUCTION — BUILT LIKE A HACKER**
 
@@ -14,415 +16,453 @@ A minimal “Hello World” app designed to run locally **as if it were in prod
 
 ## 🧠 Overview
 
-This repository represents the **frontend core** of the Leonobitech full-stack architecture.
+This is a **fullstack template for building AI-powered applications** using the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). It demonstrates how to:
 
-It uses **Next.js 15 + TypeScript (ESM)**, runs in Docker, and is automatically discoverable by **Traefik** for HTTPS routing (`app.localhost` → frontend, `api.localhost` → backend).
+- **Create multiple MCP Servers** as microservices (database, files, custom tools)
+- **Build an MCP Host** (frontend) that connects to multiple servers
+- **Integrate Claude AI** to consume tools from all connected servers
+- **Scale horizontally** by adding new MCP servers without touching existing code
 
-It’s minimal by design — just enough to prove your infrastructure works **end-to-end**.
-
----
-
-## 🧱 Stack
-
-| Layer                   | Component               | Purpose                          |
-| ----------------------- | ----------------------- | -------------------------------- |
-| ⚛️ **Next.js 15**       | React framework         | SSR + static pages + API routes  |
-| 🦾 **TypeScript (ESM)** | Modern language support | Type safety + cleaner DX         |
-| 🐳 **Docker**           | Runtime isolation       | Production-like local execution  |
-| ⚡ **Traefik 3.x**      | Reverse proxy           | HTTPS, domain routing            |
-| 🔐 **mkcert**           | Local TLS               | Trusted local HTTPS certificates |
-
----
-
-## 📦 Where this repo lives (root layout)
-
-This project is designed to sit inside the same root alongside **infra** and **backend**:
+### Architecture
 
 ```
-root/
-├─ assets/
-├─ Docs/
-│  ├─ README_BACKEND.md
-│  └─ README_INFRA.md
-├─ repositories/
-│  ├─ core/          # backend (Node + TS + Hexagonal)
-│  └─ frontend/      # <-- we will create this now
-├─ traefik/
-├─ .env
-├─ .env.example
-├─ docker-compose.yml
-├─ docker-compose.local.yml
-├─ docker-compose.prod.yml
-├─ LICENSE
-├─ Makefile
-└─ README.md
-
+┌─────────────────────────────────────────────────────────────┐
+│              FRONTEND (Next.js) = MCP HOST                   │
+│  • UI (Chat, Server Management)                             │
+│  • MCP Orchestrator (connects to multiple servers)          │
+│  • Claude Client (consumes tools from all servers)          │
+└─────────────────────────────────────────────────────────────┘
+          ↕                ↕                ↕
+    [HTTPS/SSE]      [HTTPS/SSE]      [HTTPS/SSE]
+          ↕                ↕                ↕
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│ MCP Server   │  │ MCP Server   │  │ MCP Server   │
+│   CORE       │  │  DATABASE    │  │   FILES      │
+│ (health,     │  │ (query,      │  │ (read,       │
+│  metrics,    │  │  insert,     │  │  write,      │
+│  config)     │  │  schema)     │  │  list)       │
+└──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 ---
 
-## Create `repositories/frontend` and scaffold Next.js
+## 🚀 Quick Start
 
-From the **root** of your stack:
+### 1. Prerequisites
+
+- Docker & Docker Compose
+- Node.js 22+
+- Anthropic API Key ([Get one here](https://console.anthropic.com/))
+- mkcert (for local HTTPS)
+
+### 2. Clone and Configure
 
 ```bash
-# 1) Ensure the parent folder exists
-mkdir -p repositories
-cd repositories
+git clone https://github.com/leonobitech/fullstack-mcp-playground.git
+cd fullstack-mcp-playground
 
-# 2) Create a Next.js app in "frontend"
-#    (pick one: npm / pnpm / yarn)
-npx create-next-app@latest frontend \
-  --ts --eslint --app --src-dir false --tailwind \
-  --use-npm --turbopack --import-alias "@/*"
-
-# If you prefer pnpm:
-pnpm dlx create-next-app@latest frontend \
-  --ts --eslint --app --src-dir false --tailwind \
-  --use-pnpm --turbopack --import-alias "@/*"
-
+cp .env.example .env
+# Add your Anthropic API key to .env
 ```
 
-**Why this?**
+### 3. Setup HTTPS
 
-- **App Router** and **ESM** by default.
-- **Tailwind** ready out of the box.
-- **Turbopack** for a faster dev server.
-- Keeps the default alias **`@/*`** across the project.
+```bash
+cd traefik/certs
+mkcert "*.localhost" localhost 127.0.0.1 ::1
+mv _wildcard.localhost+3.pem dev-local.pem
+mv _wildcard.localhost+3-key.pem dev-local-key.pem
+cd ../..
+```
+
+### 4. Start
+
+```bash
+docker network create leonobitech-net
+docker compose up -d --build
+```
+
+### 5. Access
+
+- **Frontend:** https://app.localhost
+- **Core API:** https://api.localhost
+- **Traefik:** https://traefik.localhost
 
 ---
 
-### Initialize shadcn/ui
-
-We prefer **CNA + shadcn init** (more control) over opinionated templates.
+## 🔧 Creating New MCP Servers
 
 ```bash
-cd repositories/frontend
+# Generate new server
+./scripts/create-mcp-server.sh weather
 
-npx shadcn@latest init
+cd repositories/mcp-weather
+npm install
+
+# Add tools in src/mcp/tools/
+# Register in docker-compose.yml and config/mcp-servers.json
 ```
 
-- Select Base color: `zinc` or `slate` ( Optional )
+---
 
-### Add some base components:
+## 📂 Structure
+
+```
+fullstack-mcp-playground/
+├── config/
+│   └── mcp-servers.json          # Server registry
+├── repositories/
+│   ├── core/                     # MCP Core Server
+│   ├── mcp-database/             # MCP Database Server
+│   ├── mcp-files/                # MCP Files Server
+│   ├── mcp-template/             # Template
+│   └── frontend/                 # MCP Host (Next.js)
+├── scripts/
+│   └── create-mcp-server.sh      # Generator CLI
+├── traefik/                      # Proxy config
+├── docker-compose.yml
+└── .env.example
+```
+
+---
+
+## 🛠️ Available MCP Servers
+
+### Core (`mcp-core`)
+
+- `get_health` - System health
+- `get_metrics` - CPU/memory metrics
+- `get_config` - Configuration
+
+### Database (`mcp-database`)
+
+- `query_database` - SQL SELECT
+- `insert_record` - Insert data
+- `get_database_schema` - Table schemas
+
+### Files (`mcp-files`)
+
+- `example_tool` - Template tool
+
+---
+
+## 🧪 Testing the Application
+
+### 1. Get Your Anthropic API Key
+
+You need a Claude API key to test the AI agent:
+
+1. Go to [Anthropic Console](https://console.anthropic.com/)
+2. Sign up or log in (this is separate from Claude Pro subscription)
+3. Get $5 in free API credits (enough for extensive testing)
+4. Create an API key
+5. Add it to your `.env` file:
 
 ```bash
-npx shadcn@latest add button card input textarea select dialog sonner
+ANTHROPIC_API_KEY=sk-ant-api03-...
 ```
 
-## Replace the base page (Hello World)
+6. Restart the frontend container:
 
-**`app/layout.tsx`**
+```bash
+docker compose restart frontend
+```
 
-```tsx
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+### 2. Access the Chat Interface
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+Open your browser and go to:
+- **Chat:** https://app.localhost/chat
+- **Server Management:** https://app.localhost/servers
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+### 3. Available Tools - What Really Works
 
-export const metadata: Metadata = {
-  title: "Frontend Core — Leonobitech",
-  description: "Next.js + TypeScript + Tailwind + shadcn/ui minimal core",
-};
+#### ✅ REAL Functional Tools (mcp-core)
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-dvh bg-background text-foreground antialiased p-6`}
-      >
-        {children}
-      </body>
-    </html>
-  );
+The `mcp-core` server exposes **3 real tools** that interact with the actual running Node.js process:
+
+---
+
+##### 🩺 **Tool 1: `get_health`**
+
+**What it does:**
+- Returns real-time health status of the mcp-core service
+- Shows actual uptime (how long the service has been running)
+- Displays real memory usage (heap and RSS)
+- Provides timestamp and service name
+
+**Real data returned:**
+```json
+{
+  "status": "healthy",
+  "uptime": "142s",
+  "memory": {
+    "heapUsed": "45MB",    // Real heap memory used
+    "heapTotal": "67MB",   // Real total heap allocated
+    "rss": "89MB"          // Real resident set size
+  },
+  "timestamp": "2025-10-10T...",
+  "service": "mcp-core"
 }
 ```
 
-**`app/page.tsx`**
+**Example questions to test:**
+```
+¿Cuál es el estado de salud del sistema?
+How long has the core service been running?
+Show me the current memory usage
+Is the system healthy?
+Check mcp-core health and memory
+```
 
-```tsx
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+---
 
-export default function HomePage() {
-  return (
-    <main className="max-w-xl mx-auto grid gap-4">
-      <h1 className="text-2xl font-semibold">🚀 Frontend Core — Hello World</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Stack</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <p>Next.js 15 + TypeScript + Tailwind + Turbopack + shadcn/ui</p>
-          <Button>It works</Button>
-        </CardContent>
-      </Card>
-    </main>
-  );
+##### 📊 **Tool 2: `get_metrics`**
+
+**What it does:**
+- Returns real CPU usage metrics from the Node.js process
+- Shows actual memory consumption in bytes
+- Can filter by metric type: `cpu`, `memory`, or `all`
+- Provides timestamp for each reading
+
+**Input parameter:**
+- `metric` (optional): `"cpu"` | `"memory"` | `"all"` (default: `"all"`)
+
+**Real data returned:**
+```json
+{
+  "timestamp": "2025-10-10T...",
+  "cpu": {
+    "user": 156789,      // Real CPU microseconds in user mode
+    "system": 34567      // Real CPU microseconds in system mode
+  },
+  "memory": {
+    "heapUsed": 47185920,    // Real bytes
+    "heapTotal": 70254592,   // Real bytes
+    "rss": 93450240,         // Real bytes
+    "external": 1234567      // Real bytes
+  }
 }
 ```
 
----
-
-## Internal directory tree (after scaffold + shadcn)
-
+**Example questions to test:**
 ```
-repositories/frontend/
-├─ public/
-├─ src/app/
-│      ├─ page.tsx
-│      └─ layout.tsx
-├─ .gitignore
-├─ components.json
-├─ eslint.config.mjs
-├─ next-env.d.ts
-├─ next.config.ts
-├─ package.json
-├─ postcss.config.mjs
-├─ README.md
-└─ tsconfig.json
-
+Muéstrame las métricas del sistema
+What's the current CPU usage?
+Get memory metrics only
+Show me all metrics
+How much memory is the core service using?
+Get CPU and memory metrics
 ```
 
 ---
 
-## Run locally (without Docker)
+##### ⚙️ **Tool 3: `get_config`**
 
-From `repositories/frontend/`:
+**What it does:**
+- Returns actual service configuration from environment variables
+- Shows Node.js version, platform, and architecture
+- Displays service name, environment, and port
+- Returns CORS settings and log level
+- **Safe**: No secrets exposed (passwords, API keys filtered out)
 
-```bash
-npm run dev
-# visit http://localhost:3000
-```
-
-Build & start (prod mode, still without Docker):
-
-```bash
-npm run build && npm start
-```
-
----
-
-## Dockerize the frontend
-
-Create a **Dockerfile** inside `repositories/frontend/`:
-
-```docker
-# --- Builder ---
-FROM node:22-alpine AS builder
-WORKDIR /app
-ENV NEXT_TELEMETRY_DISABLED=1
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# --- Runtime ---
-FROM node:22-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# curl para healthcheck
-RUN apk add --no-cache curl
-
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-
-EXPOSE 3000
-CMD ["npm", "run", "start"]
-```
-
-**`.dockerignore`**
-
-```
-node_modules
-.next
-.git
-.gitignore
-Dockerfile
-README.md
-.env
-.env.*
-*.log
-
-```
-
----
-
-## Recommended snippet (fast and no cache)
-
-To make healthcheck faster and more stable, create a lightweight endpoint that always responds 200
-
-```bash
-// src/app/healthz/route.ts
-export function GET() {
-  return new Response("ok", {
-    status: 200,
-    headers: {
-      "content-type": "text/plain; charset=utf-8",
-      "cache-control": "no-store",
-    },
-  });
+**Real data returned:**
+```json
+{
+  "service": "mcp-core",
+  "environment": "production",
+  "port": 3333,
+  "logLevel": "info",
+  "corsOrigin": "https://app.localhost",
+  "version": "0.1.0",
+  "nodeVersion": "v22.x.x",    // Real Node.js version
+  "platform": "linux",          // Real platform (docker)
+  "arch": "x64"                 // Real architecture
 }
 ```
 
+**Example questions to test:**
+```
+¿Cuál es la configuración del servicio?
+What Node.js version is running?
+Show me the service configuration
+What port is mcp-core using?
+Get environment settings
+What's the CORS origin configured?
+```
+
+---
+
+#### 🔧 Mock Tools (mcp-database) - Not Yet Functional
+
+| Tool | Status |
+|------|--------|
+| `query_database` | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
+| `insert_record` | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
+| `get_database_schema` | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
+
+These tools are placeholders. You can use them to test the flow, but they return fake data until a real database is connected.
+
+### 4. Complete Testing Guide
+
+Copy and paste these prompts into the chat to test each tool:
+
+#### 🧪 Test Individual Tools
+
+**Test `get_health`:**
+```
+¿Cuál es el estado de salud del sistema? Muéstrame el uptime y memoria.
+```
+```
+What's the current system health? Show me uptime and memory usage.
+```
+**Expected:** Claude uses `get_health` → Returns real uptime (e.g., "142s") and memory usage
+
+---
+
+**Test `get_metrics`:**
+```
+Muéstrame las métricas de CPU y memoria del sistema.
+```
+```
+Show me the current CPU and memory metrics in detail.
+```
+**Expected:** Claude uses `get_metrics` → Returns real CPU microseconds and memory bytes
+
+---
+
+**Test `get_config`:**
+```
+¿Qué configuración tiene el servicio? ¿Qué versión de Node está corriendo?
+```
+```
+What's the service configuration? What Node.js version is running?
+```
+**Expected:** Claude uses `get_config` → Returns real Node version, platform, and settings
+
+---
+
+#### 🚀 Test Advanced Scenarios
+
+**Test Multiple Tools in One Request:**
+```
+Dame un reporte completo del sistema: salud, métricas y configuración.
+```
+```
+Give me a complete system report with health, metrics, and configuration.
+```
+**Expected:** Claude uses all 3 tools (`get_health`, `get_metrics`, `get_config`) and compiles a comprehensive report
+
+---
+
+**Test Tool with Parameters:**
+```
+Get only memory metrics, not CPU.
+```
+**Expected:** Claude uses `get_metrics` with parameter `{"metric": "memory"}`
+
+---
+
+**Test Conversational Flow:**
+```
+Check the system health. If memory is over 100MB, also get the full metrics.
+```
+**Expected:** Claude uses `get_health` first, analyzes the result, then decides whether to call `get_metrics`
+
+---
+
+**Test in Spanish:**
+```
+Dime cuánto tiempo lleva corriendo el servicio mcp-core y cuánta memoria está usando.
+```
+**Expected:** Claude understands Spanish, uses `get_health`, and responds in Spanish with real data
+
+### 5. What You Should See
+
+1. **Message from you** appears on the left
+2. **"Thinking..."** indicator shows Claude is processing
+3. **Tool execution** indicators show which tools Claude is using
+4. **Final response** from Claude with the data from the tools
+5. **Tools panel** on the right shows all available tools from enabled servers
+
+### 6. How the Flow Works
+
+```
+You: "Check system health"
+  ↓
+Frontend → Claude API (with available tools)
+  ↓
+Claude decides to use: get_health
+  ↓
+Frontend → MCP Orchestrator → mcp-core server
+  ↓
+Tool executes: Returns real uptime + memory
+  ↓
+Frontend → Claude API (with tool result)
+  ↓
+Claude: "The system has been running for 142 seconds with 45MB heap usage..."
+```
+
+### 7. Enable/Disable Servers
+
+Go to https://app.localhost/servers to:
+- Toggle servers on/off
+- See which tools each server provides
+- Watch the available tools in the chat update in real-time
+
+**Example:** Disable `mcp-core` → Chat now has only database tools (mock)
+
+### 8. Cost Estimate
+
+Testing is **very cheap**:
+- ~$0.002 per conversation (including tool calls)
+- $5 free credits = ~2,500 test conversations
+- Most prompts cost less than 1 cent
+
+---
+
+## 📖 Next Steps
+
+Now that you've verified the end-to-end flow works:
+
+1. **Create real MCP servers** (weather, email, calendar, etc.)
+2. **Replace mock database tools** with real PostgreSQL queries
+3. **Build custom tools** specific to your use case
+4. **Toggle servers** to give the agent different capabilities
+
+The "gallery" concept is ready: create new servers, enable/disable them from the UI, and watch your AI agent gain new superpowers!
+
+---
+
+## 🐳 Docker Commands
+
 ```bash
-healthcheck:
-  test: ["CMD-SHELL", "curl -fsS http://localhost:3000/healthz >/dev/null || exit 1"]
-  interval: 15s
-  timeout: 3s
-  retries: 3
-  start_period: 10s
+docker compose up -d              # Start
+docker compose up -d --build      # Rebuild
+docker compose logs -f mcp-core   # Logs
+docker compose down               # Stop
 ```
-
-## Add the service to your root `docker-compose.yml`
-
-We’ll connect to the **same Traefik network** used by the rest of the stack (replace the network name if yours differs — e.g., `proxy` vs `leonobitech-net`). The example below assumes an external network named `leonobitech-net` and an `.env` with `FRONTEND_DOMAIN=app.localhost`.
-
-```yaml
-frontend:
-  build:
-    context: ./repositories/frontend
-    dockerfile: Dockerfile
-  image: frontend:v1.0.0
-  container_name: frontend
-
-  restart: unless-stopped
-
-  environment:
-    - NODE_ENV=production
-
-  networks:
-    - leonobitech-net
-
-  depends_on:
-    traefik:
-      condition: service_started
-
-  # 🔍 Healthcheck: using a lightweight endpoint
-  healthcheck:
-    test:
-      [
-        "CMD-SHELL",
-        "curl -fsS http://localhost:3000/healthz >/dev/null || exit 1",
-      ]
-    interval: 15s
-    timeout: 3s
-    retries: 3
-    start_period: 10s
-
-  labels:
-    - "traefik.enable=true"
-    # HTTPS router: https://app.localhost
-    - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_DOMAIN}`)"
-    - "traefik.http.routers.frontend.entrypoints=websecure"
-    - "traefik.http.routers.frontend.tls=true"
-    # Forward to container port 3000
-    - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-    # Optionally attach middlewares defined under traefik/dynamic
-    # - "traefik.http.routers.frontend.middlewares=secure-strict@file"
-```
-
-> Ensure your root .env contains:
->
-> ```
-> FRONTEND_DOMAIN=app.localhost
-> ```
 
 ---
 
-## Bring it up with Traefik
+## 🔐 Environment Variables
 
-From the **root**:
-
-```bash
-docker compose up -d --build frontend
-# or build the whole stack if Traefik is not up yet:
-# docker compose up -d --build
-
-# Options:
-docker ps
-docker logs -f frontend
-```
-
-Open:
-
-- [**https://app.localhost**](https://app.localhost/) → Frontend Core
-- [**https://traefik.localhost**](https://traefik.localhost/) → Dashboard (if enabled)
-
-If you’re using **mkcert** from the infra repo, the cert will be trusted and the browser will show the lock icon.
-
----
-
-## Troubleshooting
-
-- **404 from Traefik** → Check labels and the **external network name**.
-- **TLS warning** → Re-run mkcert and reload Traefik (see infra README).
-- **Port conflict 3000** → Stop local `npm run dev` when testing the container.
-- **Not using your host** → Confirm `.env FRONTEND_DOMAIN` and the router rule.
-
-## 🧠 Philosophy
-
-> “Production is not a deployment — it’s a mindset.”
-
-This repository completes the local triad:
-
-| Repo                                    | Role                                  |
-| --------------------------------------- | ------------------------------------- |
-| 🧱 `fullstack-infrastructure-blueprint` | Traefik + mkcert base                 |
-| ⚙️ `fullstack-backend-core`             | API core (Node + Express + Hexagonal) |
-| 🖥️ `fullstack-frontend-core`            | Frontend (Next.js + TypeScript)       |
-
-Together, they simulate a **real production-grade full stack**, entirely on your laptop.
-
----
-
-## 🔗 Verify Full Stack
-
-```bash
-docker compose up -d --build traefik core frontend
-```
-
-After all three repos are up:
-
-- `https://traefik.localhost` → Traefik dashboard
-- `https://api.localhost` → Backend core
-- `https://app.localhost` → Frontend core
-
-✅ Everything runs locally under HTTPS — just like in production.
-
----
-
-## 🪐 Tags
-
-`frontend`, `nextjs`, `typescript`, `esm`, `docker`, `traefik`, `mkcert`, `production-like`, `leonobitech`, `fullstack`, `infrastructure`
+| Variable            | Description               |
+| ------------------- | ------------------------- |
+| `ANTHROPIC_API_KEY` | Claude API key (required) |
+| `FRONTEND_DOMAIN`   | Frontend hostname         |
+| `BACKEND_DOMAIN`    | Backend hostname          |
+| `DATABASE_URL`      | Database connection       |
 
 ---
 
 ## 📜 License
 
-MIT © 2025 — Felix Figueroa @ Leonobitech
+MIT © 2025 — Leonobitech
 
 ---
 
-<p align="center"> <strong>🥷 Leonobitech Dev Team</strong><br/> <a href="https://www.leonobitech.com" target="_blank">https://www.leonobitech.com</a><br/> Made with 🧠, 🥷, and Docker love 🐳 </p>
-
----
-
-🔥 *This isn’t just a frontend. It’s your bridge between infrastructure and imagination.*
+<p align="center">
+  <strong>🥷 Leonobitech Dev Team</strong><br/>
+  <a href="https://www.leonobitech.com">www.leonobitech.com</a><br/>
+  Made with 🧠 and AI love 🤖
+</p>

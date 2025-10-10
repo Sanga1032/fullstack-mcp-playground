@@ -16,7 +16,8 @@
       "@middlewares/*": ["middlewares/*"],
       "@shared/*": ["shared/*"],
       "@utils/*": ["utils/*"],
-      "@types/*": ["types/*"]
+      "@types/*": ["types/*"],
+      "@mcp/*": ["mcp/*"]
     },
 
     "resolveJsonModule": true,

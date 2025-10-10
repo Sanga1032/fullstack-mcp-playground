@@ -1,7 +1,7 @@
 {
-  "name": "@repositories/core",
+  "name": "@repositories/mcp-core",
   "version": "0.1.0",
-  "description": "fullstack-backend-core",
+  "description": "MCP Core Server - System health, metrics, and configuration tools",
   "type": "module",
   "main": "dist/index.js",
   "exports": "./dist/index.mjs",
@@ -16,7 +16,10 @@
   },
   "keywords": [
     "leonobitech",
-    "microservice",
+    "mcp",
+    "mcp-server",
+    "ai-agent",
+    "claude",
     "core",
     "typescript",
     "express"
@@ -24,6 +27,7 @@
   "author": "Leonobitech",
   "license": "MIT",
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
