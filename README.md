@@ -27,7 +27,7 @@ This is a **fullstack template for building AI-powered applications** using the 
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│              FRONTEND (Next.js) = MCP HOST                   │
+│              FRONTEND (Next.js) = MCP HOST                  │
 │  • UI (Chat, Server Management)                             │
 │  • MCP Orchestrator (connects to multiple servers)          │
 │  • Claude Client (consumes tools from all servers)          │
@@ -294,10 +294,10 @@ What's the CORS origin configured?
 
 #### 🔧 Mock Tools (mcp-database) - Not Yet Functional
 
-| Tool | Status |
-|------|--------|
-| `query_database` | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
-| `insert_record` | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
+| Tool                  | Status                                                   |
+|-----------------------|----------------------------------------------------------|
+| `query_database`      | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
+| `insert_record`       | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
 | `get_database_schema` | 🟡 Returns **mock data** (TODO: connect real PostgreSQL) |
 
 These tools are placeholders. You can use them to test the flow, but they return fake data until a real database is connected.
